@@ -1,0 +1,56 @@
+package engine
+
+import (
+	"fmt"
+	"jira-auto/fetcher"
+	"log"
+	"sync"
+)
+
+type SimpleEngine struct {
+	Fetcher           fetcher.Fetcher
+	ItemChan          chan Item
+	//NoMoreRequestChan chan bool
+	DoneChan          chan bool
+	Deduplicate       Deduplicate
+}
+
+func (e *SimpleEngine) Run(seeds ...Request) {
+	var requests []Request
+	var wg sync.WaitGroup
+
+	for _, r := range seeds {
+		requests = append(requests, r)
+	}
+
+	for len(requests) > 0 {
+		r := requests[0]
+		requests = requests[1:]
+
+
+		log.Printf("Fetching %s", r.Url)
+		doc := e.Fetcher.Fetch(r.Url)
+		ParseResult := r.ParserFunc(doc)
+
+
+		for _, r := range ParseResult.Requests {
+			if e.Deduplicate.IsDuplicate(r.Url) {
+				continue
+			}
+			requests = append(requests, r)
+		}
+
+		for _, item := range ParseResult.Items {
+			log.Printf("Got item %v", item)
+			wg.Add(1)
+			go func(item Item) {
+				fmt.Println(item)
+				e.ItemChan <- item
+				wg.Done()
+			}(item)
+		}
+	}
+	wg.Wait()
+	close(e.ItemChan)
+	<-e.DoneChan
+}

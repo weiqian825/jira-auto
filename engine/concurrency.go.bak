@@ -1,0 +1,71 @@
+package engine
+
+import (
+	"fmt"
+	"jira-auto/fetcher"
+	"log"
+)
+
+type ConcurrencyEngine struct {
+	Fetcher     fetcher.Fetcher
+	ItemChan    chan Item
+	WorkerCount int
+	Deduplicate Deduplicate
+}
+
+func (e *ConcurrencyEngine) Run(seeds ...Request) {
+	requestChan := make(chan Request)
+	resultChan := make(chan ParseResult)
+
+	for i := 0; i < e.WorkerCount; i++ {
+		e.createWorker(requestChan, resultChan)
+	}
+
+	for _, r := range seeds {
+		e.sendRequest(requestChan, r)
+	}
+
+	for {
+		result := <-resultChan
+
+		for _, item := range result.Items {
+			log.Printf("Got item %v", item)
+			go func(item Item) {
+				fmt.Println(item)
+				e.ItemChan <- item
+			}(item)
+		}
+
+		for _, r := range result.Requests {
+			// url dedup
+			if e.Deduplicate.IsDuplicate(r.Url) {
+				continue
+			}
+			e.sendRequest(requestChan, r)
+		}
+	}
+	close(e.ItemChan)
+}
+
+func (e *ConcurrencyEngine) createWorker(requestChan chan Request, resultChan chan ParseResult) {
+	go func() {
+		for {
+			// 从 channel 里拿 Request
+			r := <-requestChan
+
+			// 干活
+			log.Printf("Fetching %s", r.Url)
+			doc := e.Fetcher.Fetch(r.Url)
+			result := r.Parser.Parse(doc, r.)
+
+			// 将结果发送到 channel 中
+			resultChan <- result
+		}
+	}()
+}
+
+func (e *ConcurrencyEngine) sendRequest(requestChan chan Request, request Request) {
+	go func() {
+		requestChan <- request
+	}()
+}

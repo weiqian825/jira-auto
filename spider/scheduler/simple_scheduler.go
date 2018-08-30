@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-	"jira-auto/types"
+	"jira-auto/spider/types"
 )
 
 type SimpleScheduler struct {

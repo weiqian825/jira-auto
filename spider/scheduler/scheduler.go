@@ -1,6 +1,6 @@
 package scheduler
 
-import "jira-auto/types"
+import "jira-auto/spider/types"
 
 type Scheduler interface {
 	Push(req *types.Request)

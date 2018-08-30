@@ -2,8 +2,8 @@ package parser
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"jira-auto/engine"
-	"jira-auto/types"
+	"jira-auto/spider/engine"
+	"jira-auto/spider/types"
 )
 
 func ParseJiraList(doc *goquery.Document) types.ParseResult {

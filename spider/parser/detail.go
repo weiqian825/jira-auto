@@ -2,8 +2,8 @@ package parser
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"jira-auto/model"
-	"jira-auto/types"
+	"jira-auto/spider/model"
+	"jira-auto/spider/types"
 	"strings"
 )
 

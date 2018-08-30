@@ -1,42 +1,39 @@
-package pipeline
+package saver
 
 import (
 	"fmt"
 	"io"
-	"jira-auto/model"
-	"jira-auto/types"
+	"jira-auto/spider/engine"
+	"jira-auto/spider/model"
 	"log"
 	"os"
-	"sync"
 )
 
-type PipelineJira struct {
-	File *os.File
-	mux  sync.Mutex
+type JiraSaver struct {
+	File     *os.File
+	DoneChan chan bool
 }
 
-func NewPipelineJira(filename string) (*PipelineJira, error) {
+func NewJiraSaver(filename string) (*JiraSaver, error) {
 	f, err := os.Create(filename) //创建文件
 	if err != nil {
 		return nil, err
 	}
 	f.WriteString("\xEF\xBB\xBF")
-	var mux sync.Mutex
-	return &PipelineJira{f, mux}, nil
+	return &JiraSaver{f, make(chan bool)}, nil
 }
 
-func (this *PipelineJira) Close() {
-	log.Println("Close PipelineJira")
-	this.File.Close()
-}
-
-func (this *PipelineJira) Process(item types.Item) {
-	//this.mux.Lock()
-	//defer this.mux.Unlock()
-
+func (s *JiraSaver) Save(item engine.Item) error {
 	if jira, ok := item.Payload.(model.Jira); ok {
 		//lineStr := fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\t%s\n", item.Url, jira.Title, jira.Type, jira.AssignTo, jira.ReportTo, jira.CreateTime, jira.UpdateTime)
 		lineStr := fmt.Sprintf("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n", item.Url, jira.Title, jira.Type, jira.AssignTo, jira.ReportTo, jira.CreateTime, jira.UpdateTime)
-		io.WriteString(this.File, lineStr)
+		io.WriteString(s.File, lineStr)
 	}
+	return nil
+}
+
+func (s *JiraSaver) Close() {
+	log.Println("Close JiraSaver")
+	s.File.Close()
+	s.DoneChan <- true
 }

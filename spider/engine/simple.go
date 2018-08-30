@@ -1,11 +1,11 @@
 package engine
 
 import (
-	"jira-auto/deduplicate"
-	"jira-auto/fetcher"
-	"jira-auto/pipeline"
-	"jira-auto/scheduler"
-	"jira-auto/types"
+	"jira-auto/spider/deduplicate"
+	"jira-auto/spider/fetcherfetcher"
+	"jira-auto/spider/pipelineipeline"
+	"jira-auto/spider/schedulerheduler"
+	"jira-auto/spider/types"
 	"log"
 	"sync"
 	"time"

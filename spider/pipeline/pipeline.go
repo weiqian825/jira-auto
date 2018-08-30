@@ -1,6 +1,6 @@
 package pipeline
 
-import "jira-auto/types"
+import "jira-auto/spider/types"
 
 type Pipeline interface {
 	Process(item types.Item)

@@ -1,14 +1,14 @@
-package main
+package spider
 
 import (
 	"flag"
-	"jira-auto/deduplicate"
-	"jira-auto/engine"
-	"jira-auto/fetcher"
-	"jira-auto/parser"
-	"jira-auto/pipeline"
-	"jira-auto/scheduler"
-	"jira-auto/types"
+	"jira-auto/spider/deduplicate"
+	"jira-auto/spider/engine"
+	"jira-auto/spider/fetcher"
+	"jira-auto/spider/parser"
+	"jira-auto/spider/pipeline"
+	"jira-auto/spider/scheduler"
+	"jira-auto/spider/types"
 	"net/http"
 )
 

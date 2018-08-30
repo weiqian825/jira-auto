@@ -7,10 +7,11 @@ import (
 	"jira-auto/parser"
 	"jira-auto/saver"
 	"net/http"
+	"os/user"
 )
 
 var (
-	issuetype = flag.String("issuetype", "Task, Sub-task", "jira类型")
+	issuetype  = flag.String("issuetype", "Task, Sub-task", "jira类型")
 	resolution = flag.String("resolution", "Unresolved, Done", "解决结果")
 	assignee   = flag.String("assignee", "", "经办人")
 	component  = flag.String("component", "FE", "模块，默认为 FE")
@@ -20,7 +21,7 @@ var (
 func main() {
 	flag.Parse()
 
-	engine.InitSearch(engine.Search{*issuetype,*resolution, *component, *assignee, 0})
+	engine.InitSearch(engine.Search{*issuetype, *resolution, *component, *assignee, 0})
 	url := engine.NewUrl()
 
 	fetcher := fetcher.Fetcher{
@@ -30,7 +31,14 @@ func main() {
 		},
 	}
 
-	jiraSaver, err := saver.NewJiraSaver("data.csv")
+	myself, error := user.Current()
+	if error != nil {
+		panic(error)
+	}
+	homedir := myself.HomeDir
+	desktop := homedir + "/Desktop/data.csv"
+
+	jiraSaver, err := saver.NewJiraSaver(desktop)
 	if err != nil {
 		panic(err)
 	}
@@ -41,10 +49,10 @@ func main() {
 	}
 
 	e := engine.SimpleEngine{
-		Fetcher:           fetcher,
-		ItemChan:          itemChan,
-		DoneChan:          jiraSaver.DoneChan,
-		Deduplicate:       engine.NewSimpleDeDuplicate(),
+		Fetcher:     fetcher,
+		ItemChan:    itemChan,
+		DoneChan:    jiraSaver.DoneChan,
+		Deduplicate: engine.NewSimpleDeDuplicate(),
 	}
 
 	e.Run(engine.Request{

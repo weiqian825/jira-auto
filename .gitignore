@@ -1,3 +1,6 @@
+/node_modules
+jira-auto-darwin-x64
 .idea
 data.csv
 main
+package-lock.json

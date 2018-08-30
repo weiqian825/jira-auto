@@ -1,15 +1,18 @@
-package engine
+package deduplicate
+
+type Deduplicate interface {
+	IsDuplicate(url string) bool
+}
 
 type SimpleDeDuplicate struct {
 	VisitedUrls map[string]bool
 }
 
-
 func NewSimpleDeDuplicate() *SimpleDeDuplicate {
 	return &SimpleDeDuplicate{make(map[string]bool)}
 }
 
-func (d *SimpleDeDuplicate)IsDuplicate(url string) bool {
+func (d *SimpleDeDuplicate) IsDuplicate(url string) bool {
 	if d.VisitedUrls[url] {
 		return true
 	}

@@ -2,19 +2,17 @@ package parser
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"jira-auto/engine"
-	"strings"
 	"jira-auto/model"
+	"jira-auto/types"
+	"strings"
 )
-
-
 
 func getText(doc *goquery.Document, sel string) string {
 	return strings.TrimSpace(doc.Find(sel).Text())
 }
 
-func ParseJiraDetail(doc *goquery.Document, url string) engine.ParseResult {
-	result := engine.ParseResult{}
+func ParseJiraDetail(doc *goquery.Document, url string) types.ParseResult {
+	result := types.ParseResult{}
 
 	title := getText(doc, "#summary-val")
 	_type := getText(doc, "#type-val")
@@ -30,10 +28,9 @@ func ParseJiraDetail(doc *goquery.Document, url string) engine.ParseResult {
 		reportTo,
 		createTime,
 		updateTime,
-
 	}
 
-	result.Items = []engine.Item{{
+	result.Items = []types.Item{{
 		url,
 		jira,
 	}}

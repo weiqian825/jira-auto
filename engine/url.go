@@ -1,15 +1,15 @@
 package engine
 
 import (
-	"net/url"
 	"fmt"
+	"net/url"
 )
 
 type Search struct {
-	IssueType string
+	IssueType  string
 	Resolution string
-	Component string
-	Assignee  string
+	Component  string
+	Assignee   string
 	StartIndex int
 }
 

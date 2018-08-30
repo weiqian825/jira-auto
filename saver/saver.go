@@ -29,6 +29,5 @@ func SaveItemFromChan(s Saver) (chan engine.Item, error) {
 		}
 	}()
 
-
 	return itemChan, nil
 }

@@ -1,13 +1,13 @@
 package parser
 
 import (
-	"jira-auto/engine"
 	"github.com/PuerkitoBio/goquery"
+	"jira-auto/engine"
+	"jira-auto/types"
 )
 
-func ParseJiraList(doc *goquery.Document) engine.ParseResult {
-	result := engine.ParseResult{}
-
+func ParseJiraList(doc *goquery.Document) types.ParseResult {
+	result := types.ParseResult{}
 
 	//doc.Find(".pagination").Each(func(i int, selection *goquery.Selection) {
 	//	fmt.Println("--------------------------")
@@ -22,17 +22,17 @@ func ParseJiraList(doc *goquery.Document) engine.ParseResult {
 	}
 
 	nextPageUrl := engine.NewUrl()
-	result.Requests = append(result.Requests, engine.Request{
-		Url: nextPageUrl,
+	result.Requests = append(result.Requests, types.Request{
+		Url:        nextPageUrl,
 		ParserFunc: ParseJiraList,
 	})
 
 	links.Each(func(i int, selection *goquery.Selection) {
 		href, _ := selection.Attr("href")
 		url := "https://jira.garenanow.com" + href
-		result.Requests = append(result.Requests, engine.Request{
+		result.Requests = append(result.Requests, types.Request{
 			Url: url,
-			ParserFunc: func(document *goquery.Document) engine.ParseResult {
+			ParserFunc: func(document *goquery.Document) types.ParseResult {
 				return ParseJiraDetail(document, url)
 			},
 		})

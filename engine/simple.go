@@ -1,56 +1,77 @@
 package engine
 
 import (
-	"fmt"
+	"jira-auto/deduplicate"
 	"jira-auto/fetcher"
+	"jira-auto/pipeline"
+	"jira-auto/scheduler"
+	"jira-auto/types"
 	"log"
 	"sync"
+	"time"
 )
 
 type SimpleEngine struct {
-	Fetcher           fetcher.Fetcher
-	ItemChan          chan Item
-	//NoMoreRequestChan chan bool
-	DoneChan          chan bool
-	Deduplicate       Deduplicate
+	Fetcher     fetcher.Fetcher
+	Pipelines   []pipeline.Pipeline
+	Scheduler   scheduler.Scheduler
+	Deduplicate deduplicate.Deduplicate
 }
 
-func (e *SimpleEngine) Run(seeds ...Request) {
-	var requests []Request
+func (e *SimpleEngine) Run(seeds ...types.Request) {
 	var wg sync.WaitGroup
+	var lastRequestTime time.Time
 
 	for _, r := range seeds {
-		requests = append(requests, r)
+		e.Scheduler.Push(&r)
 	}
 
-	for len(requests) > 0 {
-		r := requests[0]
-		requests = requests[1:]
+	for {
+		r := e.Scheduler.Poll()
 
-
-		log.Printf("Fetching %s", r.Url)
-		doc := e.Fetcher.Fetch(r.Url)
-		ParseResult := r.ParserFunc(doc)
-
-
-		for _, r := range ParseResult.Requests {
-			if e.Deduplicate.IsDuplicate(r.Url) {
-				continue
+		if r == nil {
+			if time.Now().Sub(lastRequestTime).Seconds() > 3 {
+				break
 			}
-			requests = append(requests, r)
+			//if (time.Now().Sub(lastRequestTime))
+			time.Sleep(100 * time.Millisecond)
+			continue
 		}
 
-		for _, item := range ParseResult.Items {
-			log.Printf("Got item %v", item)
-			wg.Add(1)
-			go func(item Item) {
-				fmt.Println(item)
-				e.ItemChan <- item
-				wg.Done()
-			}(item)
-		}
+		lastRequestTime = time.Now()
+
+		wg.Add(1)
+		go func(r types.Request) {
+			e.processRequest(r)
+			wg.Done()
+		}(*r)
 	}
 	wg.Wait()
-	close(e.ItemChan)
-	<-e.DoneChan
+	e.close()
+}
+
+func (e *SimpleEngine) close() {
+	for _, p := range e.Pipelines {
+		p.Close()
+	}
+}
+
+func (e *SimpleEngine) processRequest(r types.Request) {
+	log.Printf("Fetching %s", r.Url)
+	doc := e.Fetcher.Fetch(r.Url)
+	result := r.ParserFunc(doc)
+
+	for _, r := range result.Requests {
+		_r := r
+		if !e.Deduplicate.IsDuplicate(r.Url) {
+			e.Scheduler.Push(&_r)
+		}
+	}
+
+	for _, item := range result.Items {
+		log.Printf("Got item %v", item)
+		for _, p := range e.Pipelines {
+			p.Process(item)
+		}
+	}
 }

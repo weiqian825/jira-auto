@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-	"github.com/PuerkitoBio/goquery"
 )
 
 func determineEncoding(r *bufio.Reader) encoding.Encoding {

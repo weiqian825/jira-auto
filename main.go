@@ -2,15 +2,18 @@ package main
 
 import (
 	"flag"
+	"jira-auto/deduplicate"
 	"jira-auto/engine"
 	"jira-auto/fetcher"
 	"jira-auto/parser"
-	"jira-auto/saver"
+	"jira-auto/pipeline"
+	"jira-auto/scheduler"
+	"jira-auto/types"
 	"net/http"
 )
 
 var (
-	issuetype = flag.String("issuetype", "Task, Sub-task", "jira类型")
+	issuetype  = flag.String("issuetype", "Task, Sub-task", "jira类型")
 	resolution = flag.String("resolution", "Unresolved, Done", "解决结果")
 	assignee   = flag.String("assignee", "", "经办人")
 	component  = flag.String("component", "FE", "模块，默认为 FE")
@@ -20,7 +23,7 @@ var (
 func main() {
 	flag.Parse()
 
-	engine.InitSearch(engine.Search{*issuetype,*resolution, *component, *assignee, 0})
+	engine.InitSearch(engine.Search{*issuetype, *resolution, *component, *assignee, 0})
 	url := engine.NewUrl()
 
 	fetcher := fetcher.Fetcher{
@@ -30,24 +33,19 @@ func main() {
 		},
 	}
 
-	jiraSaver, err := saver.NewJiraSaver("data.csv")
-	if err != nil {
-		panic(err)
-	}
-
-	itemChan, err := saver.SaveItemFromChan(jiraSaver)
+	pipelineJira, err := pipeline.NewPipelineJira("data.csv")
 	if err != nil {
 		panic(err)
 	}
 
 	e := engine.SimpleEngine{
-		Fetcher:           fetcher,
-		ItemChan:          itemChan,
-		DoneChan:          jiraSaver.DoneChan,
-		Deduplicate:       engine.NewSimpleDeDuplicate(),
+		Fetcher:     fetcher,
+		Pipelines:   []pipeline.Pipeline{pipelineJira},
+		Scheduler:   scheduler.NewSimpleScheduler(100),
+		Deduplicate: deduplicate.NewSimpleDeDuplicate(),
 	}
 
-	e.Run(engine.Request{
+	e.Run(types.Request{
 		Url:        url,
 		ParserFunc: parser.ParseJiraList,
 	})

@@ -1,4 +1,4 @@
-package engine
+package types
 
 import "github.com/PuerkitoBio/goquery"
 
@@ -15,8 +15,4 @@ type ParseResult struct {
 type Item struct {
 	Url     string
 	Payload interface{}
-}
-
-type Deduplicate interface {
-	IsDuplicate(url string) bool
 }

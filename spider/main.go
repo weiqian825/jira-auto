@@ -1,4 +1,4 @@
-package spider
+package main
 
 import (
 	"flag"
@@ -10,6 +10,7 @@ import (
 	"jira-auto/spider/scheduler"
 	"jira-auto/spider/types"
 	"net/http"
+	"os/user"
 )
 
 var (
@@ -33,7 +34,14 @@ func main() {
 		},
 	}
 
-	pipelineJira, err := pipeline.NewPipelineJira("data.csv")
+	myself, error := user.Current()
+	if error != nil {
+		panic(error)
+	}
+	homedir := myself.HomeDir
+	desktop := homedir + "/Desktop/data.csv"
+
+	pipelineJira, err := pipeline.NewPipelineJira(desktop)
 	if err != nil {
 		panic(err)
 	}

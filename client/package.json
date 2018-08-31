@@ -1,0 +1,22 @@
+{
+  "name": "jira-auto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-packager  --overwrite  ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "fix-path": "^2.1.0",
+    "shelljs": "^0.8.2"
+  },
+  "devDependencies": {
+    "electron": "^2.0.0",
+    "electron-packager": "^12.1.1"
+  }
+}

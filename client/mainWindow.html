@@ -1,0 +1,82 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+  <title>jira-auto</title>
+</head>
+<body>
+  <div class="panel panel-default" style="margin: 10px">
+    <div class="panel-body">
+      <div class="form-horizontal" role="form">
+        <div class="form-group">
+          <label for="input_name" class="col-sm-2 control-label">登录帐号</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="input_name" placeholder="请输入用户名">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="input_cookie" class="col-sm-2 control-label">登陆cookie</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="input_cookie" placeholder="请输入登陆cookie">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-2">
+            <button id="btn_exec_submit" class="btn btn-default">exec运行</button>
+          </div>
+          <div class="col-sm-offset-2 col-sm-2">
+            <button id="btn_spawn_submit" class="btn btn-default">spawn运行</button>
+          </div>
+          <!-- <div class="col-sm-offset-2 col-sm-2">
+            <button id="btn_shelljs_submit" class="btn btn-default">shelljs运行</button>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+      const electron = require('electron')
+      const {ipcRenderer} = electron
+      document.querySelector('#btn_exec_submit').addEventListener('click',submitFunc)
+      document.querySelector('#btn_spawn_submit').addEventListener('click',submitFunc) 
+      // document.querySelector('#btn_shelljs_submit').addEventListener('click',submitFunc) 
+      function submitFunc(e){
+          e.preventDefault()
+          const input_name = document.querySelector('#input_name').value
+          const input_cookie = document.querySelector('#input_cookie').value
+          // const command_cookie = '--cookie="'+ input_cookie.replace(/"/g,'') + '"'
+          // const command_assign = input_name ? ('--assignee=' + input_name ):''
+          // const command_exec = 'go run go/main.go '
+          // const run_exec = command_exec + ' ' + command_cookie + ' ' + command_assign
+          // const run_spawn =  ['run', 'go/main.go', command_cookie, command_assign]
+          const command_cookie = '--cookie="'+ input_cookie.replace(/"/g,'') + '"'
+          const command_assign = input_name ? ('--assignee=' + input_name ):''
+          const main = './jira_spider'
+          const command_exec = main
+          const run_exec = command_exec + ' ' + command_cookie + ' ' + command_assign
+          const spawn_param =  [ command_cookie, command_assign]
+          const  run_spawn = [main, spawn_param]
+          if(e.currentTarget.id === 'btn_exec_submit'){
+            ipcRenderer.send('exec:querybtn',run_exec)
+          }else if(e.currentTarget.id === 'btn_spawn_submit'){
+            ipcRenderer.send('spawn:querybtn',run_spawn)
+          }else if(e.currentTarget.id === 'btn_shelljs_submit'){
+            ipcRenderer.send('shelljs:querybtn',run_exec)
+          }
+      }
+      ipcRenderer.on('exec:querybtn', function (e, tips, error, stdout, stderr) {
+        console.log(tips);
+        error && console.log("error_____",error);
+        stdout && console.log("stdout_____",stdout);
+        stderr && console.log("stderr_____",stderr);
+      });
+      ipcRenderer.on('spawn:querybtn', function (e, tips, data) {
+        console.log(tips);
+        data && console.log("data_____",data);
+      });
+      ipcRenderer.on('jira-auto', function (e, tips) {
+        console.log(tips);
+      });
+  </script>
+</body>
+</html>

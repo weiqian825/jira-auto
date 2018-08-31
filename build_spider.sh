@@ -1,0 +1,1 @@
+go build -o ./client/jira_spider ./spider

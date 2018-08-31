@@ -1,0 +1,1 @@
+./build_spider.sh && ./build_client.sh

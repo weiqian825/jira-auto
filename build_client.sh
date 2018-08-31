@@ -1,1 +1,1 @@
-cd ./client && npm run pack
+cd ./client && npm install && npm run pack

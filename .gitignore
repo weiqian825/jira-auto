@@ -1,3 +1,6 @@
+/node_modules
+/outApp
 .idea
 data.csv
 main
+package-lock.json

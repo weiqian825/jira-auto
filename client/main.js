@@ -6,8 +6,11 @@ const exec = require('child_process').exec
 const spawn = require('child_process').spawn
 // https://github.com/electron-userland/electron-packager/issues/603
 const fixPath = require('fix-path')
+const fs = require('fs')
 
 fixPath()
+
+console.log(path.resolve(__dirname))
 
 const {
   app,
@@ -33,7 +36,7 @@ ipcMain.on('exec:querybtn', function (e, command) {
   console.log('exec command---> ', command)
   mainWindow.webContents.send('exec:querybtn', '进入函数：exec')
 
-  exec(__dirname + '/' + command, (error, stdout, stderr) => {
+  exec(path.resolve(__dirname) + '/' + command, (error, stdout, stderr) => {
     console.log('执行结束：exec')
     mainWindow.webContents.send('exec:querybtn', '结束执行', error, stdout, stderr)
     error && console.log(error)
@@ -45,16 +48,18 @@ ipcMain.on('exec:querybtn', function (e, command) {
 // method 3: try use child_process  spawn
 ipcMain.on('spawn:querybtn', function (e, command) {
   console.log('spawn command---> ', command)
-  const _process = spawn(__dirname + '/' + command[0], command[1])
+  const _process = spawn(path.resolve(__dirname) + '/' + command[0], command[1])
   mainWindow.webContents.send('spawn:querybtn', '进入函数：spawn')
 
   _process.stdout.on('data', function (data) {
-    console.log('执行结束：spawn')
-    mainWindow.webContents.send('spawn:querybtn', '结束执行', data)
+    console.log('stderr执行结束：spawn')
+    mainWindow.webContents.send('spawn:querybtn', 'stderr结束执行', data)
     console.log(data.toString())
   })
 
   _process.stderr.on('data', function (data) {
+    console.log('stderr执行结束：spawn')
+    mainWindow.webContents.send('spawn:querybtn', 'stderr结束执行', data)
     console.log(data.toString())
   })
 })
@@ -63,19 +68,19 @@ app.on('ready', function () {
   mainWindow = new BrowserWindow({})
   mainWindow.webContents.openDevTools()
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'mainWindow.html'),
+    pathname: path.join(path.resolve(__dirname), 'mainWindow.html'),
     protocol: 'file',
     slashes: true
   }))
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate)
   Menu.setApplicationMenu(mainMenu)
 
-  // setTimeout(function () {
-  //   mainWindow.webContents.send('jira-auto', __dirname)
-  //   if (fs.existsSync(__dirname + '/./jira-auto')) {
-  //     mainWindow.webContents.send('jira-auto', '文件存在')
-  //   }
-  // }, 1000)
+  setTimeout(function () {
+    mainWindow.webContents.send('jira-auto', path.resolve(__dirname))
+    if (fs.existsSync(path.resolve(__dirname) + '/./jira-auto')) {
+      mainWindow.webContents.send('jira-auto', '文件存在')
+    }
+  }, 1000)
 })
 
 const mainMenuTemplate = [{

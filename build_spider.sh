@@ -1,1 +1,1 @@
-go build -o ./client/jira_spider ./spider
+go build -o ./client/jira_spider ./spider &&  cd ./client && npm install && npm run pack

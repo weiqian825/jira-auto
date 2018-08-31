@@ -6,17 +6,33 @@
   "scripts": {
     "start": "electron main.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pack": "electron-packager  --overwrite  ."
+    "pack": "electron-packager --out ../outApp  --overwrite  .",
+    "standard": "standard"
+  },
+  "standard": {
+    "fix": false,
+    "parser": "babel-eslint",
+    "globals": [
+      "__dirname"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "standard"
+    }
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-eslint": "^9.0.0",
     "child_process": "^1.0.2",
     "fix-path": "^2.1.0",
     "shelljs": "^0.8.2"
   },
   "devDependencies": {
     "electron": "^2.0.0",
-    "electron-packager": "^12.1.1"
+    "electron-packager": "^12.1.1",
+    "husky": "^1.0.0-rc.13",
+    "standard": "^11.0.1"
   }
 }

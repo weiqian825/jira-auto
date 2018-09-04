@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"></meta>
+    <title>jira-auto</title>
+    <style>
+      body{
+        width: 500px;
+        height: 260px;
+        display: flex;
+        justify-content: center;
+        font-family: 16px;
+      }
+      span{
+        width: 20px;
+        margin-right: 20px;
+        font-weight: bold;
+      }
+      .Grid{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .Grid-cell{
+        width:80px;
+        height:30px;
+        margin-top:10px;
+      }
+      </style>
+  </head>
+  <body>
+    <div class="Grid">
+      <ul>
+          <span>正常可忽略不选哈，为默认模式</span>
+      </ul>
+      <div id="selectBox">
+        <ul>
+          <span>Project</span>SPDGT:
+          <input type="checkbox" name="project" value="SPDGT" />TEST:
+          <input type="checkbox" name="project" value="TEST" />  
+        </ul>
+        <ul>
+          <span>Issuetype</span>Task:
+          <input type="checkbox" name="issuetype" value="Task" />Sub-task:
+          <input type="checkbox" name="issuetype" value="Sub-task" />  
+        </ul>
+        <ul>
+          <span>Resolution</span>Unresolved:
+          <input type="checkbox" name="resolution" value="Unresolved" />Done:
+          <input type="checkbox" name="resolution" value="Done" />  
+        </ul>
+        <ul>
+          <span>Component</span>FE:
+          <input type="checkbox" name="component" value="FE" />BE:
+          <input type="checkbox" name="component" value="BE" />  
+        </ul>
+        <ul>
+          <span>Status</span>To Do:
+          <input type="checkbox"  name="status" value="FE" />Closed:
+          <input type="checkbox" name="status" value="BE" />  
+        </ul>
+      </div>
+      
+      <div id="jiraBox">
+          <button type="button" class="Grid-cell" data-type="week">周报</button>
+          <button type="button" class="Grid-cell" data-type="month">月报</button>
+          <button type="button" class="Grid-cell" data-type="quarter">季报</button>
+          <button type="button" class="Grid-cell" data-type="self">自评</button>
+          <button data-url="https://drive.google.com/drive/u/0/my-drive" class="Grid-cell">查看Drive</button>
+        </div>
+        <ul></ul>
+        <ul></ul>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+    <script type="text/javascript">
+      // https://jira.garenanow.com/rest/api/2/search?jql= 
+      // project = SPDGT 
+      // AND issuetype IN ("Task", "Sub-task") 
+      // AND resolution IN ("Unresolved", "Done") 
+      // AND component IN ("FE","BE") 
+      // AND status IN ("To Do", "In Progress", "Closed") 
+      // AND assignee IN ("qian.wei@shopee.com")
+      </script>
+  </body>
+
+</html>

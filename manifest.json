@@ -8,9 +8,10 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": ["background.js"],
+    "page": "background.html",
     "persistent": false
   },
+
   "permissions": [
     "cookies",
     "<all_urls>",
@@ -31,6 +32,5 @@
       "https://www.googleapis.com/auth/drive",
       "https://www.googleapis.com/auth/spreadsheets"
     ]
-  },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
+  }
 }

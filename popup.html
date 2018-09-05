@@ -30,6 +30,7 @@
   </head>
   <body>
     <div class="Grid">
+      <ul></ul>
       <ul>
           <span>正常可忽略不选哈，为默认模式</span>
       </ul>
@@ -47,17 +48,22 @@
         <!-- <ul>
           <span>Resolution</span>Unresolved:
           <input type="checkbox" name="resolution" value="Unresolved" />Done:
-          <input type="checkbox" name="resolution" value="Done" />
+          <input type="checkbox" name="resolution" value="Done" />  
         </ul> -->
         <ul>
           <span>Component</span>FE:
           <input type="checkbox" name="component" value="FE" />BE:
-          <input type="checkbox" name="component" value="BE" />
+          <input type="checkbox" name="component" value="BE" />  
+        </ul>
+        <ul>
+          <span>Assignee</span>
+          <input type="text" name="assignee" placeholder="qian.wei;xingzhi.you;etc"/> &nbsp  All:
+          <input type="checkbox" name="assignee" value=" " /> 
         </ul>
         <!-- <ul>
           <span>Status</span>To Do:
           <input type="checkbox"  name="status" value="To Do" />Closed:
-          <input type="checkbox" name="status" value="Closed" />
+          <input type="checkbox" name="status" value="Closed" />  
         </ul> -->
       </div>
       
@@ -68,7 +74,6 @@
           <button type="button" class="Grid-cell" data-type="self">自评</button>
           <button data-url="https://drive.google.com/drive/u/0/my-drive" class="Grid-cell">查看Drive</button>
         </div>
-        <ul></ul>
         <ul></ul>
       </div>
     </div>

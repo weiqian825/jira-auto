@@ -11,6 +11,7 @@ const gSheet = new GSheet()
 // AND status IN ("To Do", "In Progress", "Closed")
 // AND assignee IN ("qian.wei@shopee.com")
 window.chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  console.log('background.js------', request.searchUrl)
   window.fetch(request.searchUrl)
     .then(function (response) {
       return response.json()
@@ -34,13 +35,15 @@ window.chrome.runtime.onMessage.addListener(function (request, sender, sendRespo
             'https://jira.garenanow.com/browse/' + key,
             summary,
             description || '',
-            assignee.name || '',
+            (assignee && assignee.name) || '',
             (reporter && reporter.name) || '',
             created
           ]
           result.push(arr)
         })
       }
+
+      window.alert(result)
       generateSheet(result)
     })
 })

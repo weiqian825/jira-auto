@@ -11,9 +11,9 @@ var initArgs = {
   project: ['SPDGT'],
   issuetype: ['Task', 'Sub-task'],
   // resolution: ['Unresolved', 'Done'],
-  component: ['FE']
+  component: ['FE'],
   // status: ['To Do', 'In Progress', 'Closed', 'Waiting'],
-  // assignee: ['qian.wei@shopee.com']
+  assignee: []
 }
 
 window.fetch('https://jira.garenanow.com/rest/auth/1/session')
@@ -31,7 +31,7 @@ var originUrl = `https://jira.garenanow.com/rest/api/2/search?jql=
   project IN {project}
   AND issuetype IN {issuetype}
   AND component IN  {component}
-  AND assignee IN {assignee}`
+  {assignee}`
 
 // AND resolution IN {resolution}
 // AND status IN {status}
@@ -50,7 +50,19 @@ jiraBox.addEventListener('click', function (e) {
       for (var j = 0; j < inputDom.length; j++) {
         var item = inputDom[j]
         tempkey = item.name
-        if (item.checked) {
+        if (tempkey === 'assignee') {
+          if (item.checked) {
+            initArgs[tempkey] = []
+          } else if (item.value) {
+            initArgs[tempkey] = item.value.split(';').map(function (item) {
+              if (item.indexOf('@shopee.com') > -1) {
+                return item
+              } else {
+                return item + '@shopee.com'
+              }
+            })
+          }
+        } else if (item.checked) {
           panelObj[tempkey] = []
           panelObj[tempkey].push(item.value)
           selectFlag = true
@@ -69,8 +81,8 @@ jiraBox.addEventListener('click', function (e) {
       .replace('{resolution}', searchArgs.resolution)
       .replace('{component}', searchArgs.component)
       .replace('{status}', searchArgs.status)
-      .replace('{assignee}', searchArgs.assignee)
-
+      .replace('{assignee}', searchArgs.assignee ? '' : ('AND assignee IN ' + searchArgs.assignee))
+    console.log(searchUrl, searchUrl)
     window.chrome.runtime.sendMessage({
       action: queryType,
       searchUrl: searchUrl

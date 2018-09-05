@@ -1,3 +1,5 @@
+const identity = window.chrome.identity
+
 export default class GSheet {
   constructor () {
     this._token = ''
@@ -52,11 +54,17 @@ export default class GSheet {
 
   getAuthToken () {
     return new Promise((resolve, reject) => {
-      window.chrome.identity.getAuthToken({
-        'interactive': true
+      identity.getAuthToken({
+        'interactive': false
       }, token => {
-        this._token = token
-        resolve()
+        identity.removeCachedAuthToken({ token }, () => {
+          identity.getAuthToken({
+            'interactive': true
+          }, token => {
+            this._token = token
+            resolve()
+          })
+        })
       })
     })
   }

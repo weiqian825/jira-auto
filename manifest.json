@@ -11,7 +11,11 @@
     "page": "background.html",
     "persistent": false
   },
-
+  "icons": {
+    "128": "img/logo.png",
+    "16": "img/logo.png",
+    "48": "img/logo.png"
+  },
   "permissions": [
     "cookies",
     "<all_urls>",

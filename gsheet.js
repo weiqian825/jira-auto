@@ -55,7 +55,7 @@ export default class GSheet {
   getAuthToken () {
     return new Promise((resolve, reject) => {
       identity.getAuthToken({
-        'interactive': false
+        'interactive': true
       }, token => {
         identity.removeCachedAuthToken({ token }, () => {
           identity.getAuthToken({

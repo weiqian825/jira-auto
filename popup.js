@@ -15,6 +15,17 @@ var initArgs = {
   status: ['To Do', 'In Progress', 'Closed'],
   assignee: ['qian.wei@shopee.com']
 }
+
+window.fetch('https://jira.garenanow.com/rest/auth/1/session')
+  .then(function (response) {
+    return response.json()
+  })
+  .then(function (myJson) {
+    if (myJson && myJson.name) {
+      initArgs.assignee = [myJson.name]
+    }
+  })
+
 var searchArgs = {}
 var originUrl = `https://jira.garenanow.com/rest/api/2/search?jql=
   project IN {project}
@@ -28,6 +39,7 @@ jiraBox.addEventListener('click', function (e) {
   if (e && e.target && e.target.dataset && e.target.dataset.type) {
     var queryType = e.target.dataset.type
     var selectDom = selectBox.getElementsByTagName('ul')
+    var panelObj = {}
     for (var i = 0; i < selectDom.length; i++) {
       var ul = selectDom[i]
       var inputDom = ul.getElementsByTagName('input')
@@ -38,6 +50,8 @@ jiraBox.addEventListener('click', function (e) {
         var item = inputDom[j]
         tempkey = item.name
         if (item.checked) {
+          panelObj[tempkey] = []
+          panelObj[tempkey].push(item.value)
           selectFlag = true
           templist.push(item.value)
         }
@@ -46,7 +60,7 @@ jiraBox.addEventListener('click', function (e) {
         initArgs[tempkey] = templist
       }
     }
-    for (let key in initArgs) {
+    for (var key in initArgs) {
       searchArgs[key] = '("' + initArgs[key].join('","') + '")'
     }
     var searchUrl = originUrl.replace('{project}', searchArgs.project)
@@ -60,7 +74,7 @@ jiraBox.addEventListener('click', function (e) {
       action: queryType,
       searchUrl: searchUrl
     })
-  } else {
-    window.location.href = 'https://drive.google.com/drive/u/0/my-drive'
+  } else if (e && e.target && e.target.dataset && e.target.dataset.url) {
+    window.chrome.tabs.create({ url: e.target.dataset.url })
   }
 })

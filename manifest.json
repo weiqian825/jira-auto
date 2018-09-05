@@ -12,8 +12,25 @@
     "persistent": false
   },
   "permissions": [
-    "cookies", 
-    "<all_urls>"
+    "cookies",
+    "<all_urls>",
+    "background",
+    "identity",
+    "notifications",
+    "storage",
+    "alarms",
+    "https://spreadsheets.google.com/",
+    "https://docs.google.com/"
   ],
+  "oauth2": {
+    "client_id": "284149066032-ea61tm82sj7j2m1mpombqdt4kk3q6s37.apps.googleusercontent.com",
+    "scopes": [
+      "https://spreadsheets.google.com/feeds",
+      "https://docs.google.com/feeds",
+      "https://www.googleapis.com/auth/plus.login",
+      "https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/spreadsheets"
+    ]
+  },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
 }

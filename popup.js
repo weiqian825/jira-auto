@@ -10,10 +10,10 @@ var selectBox = document.getElementById('selectBox')
 var initArgs = {
   project: ['SPDGT'],
   issuetype: ['Task', 'Sub-task'],
-  resolution: ['Unresolved', 'Done'],
-  component: ['FE', 'BE'],
-  status: ['To Do', 'In Progress', 'Closed'],
-  assignee: ['qian.wei@shopee.com']
+  // resolution: ['Unresolved', 'Done'],
+  component: ['FE']
+  // status: ['To Do', 'In Progress', 'Closed', 'Waiting'],
+  // assignee: ['qian.wei@shopee.com']
 }
 
 window.fetch('https://jira.garenanow.com/rest/auth/1/session')
@@ -30,10 +30,11 @@ var searchArgs = {}
 var originUrl = `https://jira.garenanow.com/rest/api/2/search?jql=
   project IN {project}
   AND issuetype IN {issuetype}
-  AND resolution IN {resolution}
   AND component IN  {component}
-  AND status IN {status}
   AND assignee IN {assignee}`
+
+// AND resolution IN {resolution}
+// AND status IN {status}
 
 jiraBox.addEventListener('click', function (e) {
   if (e && e.target && e.target.dataset && e.target.dataset.type) {

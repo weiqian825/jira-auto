@@ -35,7 +35,7 @@ window.chrome.runtime.onMessage.addListener(function (request, sender, sendRespo
             summary,
             description || '',
             assignee.name || '',
-            reporter.name || '',
+            (reporter && reporter.name) || '',
             created
           ]
           result.push(arr)

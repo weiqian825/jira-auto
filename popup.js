@@ -15,6 +15,7 @@ var initArgs = {
   // status: ['To Do', 'In Progress', 'Closed', 'Waiting'],
   assignee: []
 }
+var currentUser = []
 
 window.fetch('https://jira.garenanow.com/rest/auth/1/session')
   .then(function (response) {
@@ -22,7 +23,8 @@ window.fetch('https://jira.garenanow.com/rest/auth/1/session')
   })
   .then(function (myJson) {
     if (myJson && myJson.name) {
-      initArgs.assignee = [myJson.name]
+      currentUser = [myJson.name]
+      initArgs.assignee = currentUser
     }
   })
 
@@ -47,13 +49,15 @@ jiraBox.addEventListener('click', function (e) {
       var tempkey = ''
       var templist = []
       var selectFlag = false
+      var inputNameFlag = false
       for (var j = 0; j < inputDom.length; j++) {
         var item = inputDom[j]
         tempkey = item.name
         if (tempkey === 'assignee') {
           if (item.checked) {
-            initArgs[tempkey] = []
+            selectFlag = true
           } else if (item.value) {
+            inputNameFlag = true
             initArgs[tempkey] = item.value.split(';').map(function (item) {
               if (item.indexOf('@shopee.com') > -1) {
                 return item
@@ -61,6 +65,8 @@ jiraBox.addEventListener('click', function (e) {
                 return item + '@shopee.com'
               }
             })
+          } else if (!selectFlag && !inputNameFlag) {
+            initArgs[tempkey] = currentUser
           }
         } else if (item.checked) {
           panelObj[tempkey] = []
@@ -70,7 +76,11 @@ jiraBox.addEventListener('click', function (e) {
         }
       }
       if (selectFlag) {
-        initArgs[tempkey] = templist
+        if (tempkey === 'assignee') {
+          initArgs[tempkey] = []
+        } else {
+          initArgs[tempkey] = templist
+        }
       }
     }
     for (var key in initArgs) {
@@ -81,7 +91,7 @@ jiraBox.addEventListener('click', function (e) {
       .replace('{resolution}', searchArgs.resolution)
       .replace('{component}', searchArgs.component)
       .replace('{status}', searchArgs.status)
-      .replace('{assignee}', searchArgs.assignee ? '' : ('AND assignee IN ' + searchArgs.assignee))
+      .replace('{assignee}', initArgs.assignee.length > 0 ? ('AND assignee IN ' + searchArgs.assignee) : '')
     console.log(searchUrl, searchUrl)
     window.chrome.runtime.sendMessage({
       action: queryType,

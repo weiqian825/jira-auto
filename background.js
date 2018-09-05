@@ -14,7 +14,12 @@ window.chrome.runtime.onMessage.addListener(function (request, sender, sendRespo
   console.log('background.js------', request.searchUrl)
   window.fetch(request.searchUrl)
     .then(function (response) {
-      return response.json()
+      if (response.status === 200) {
+        return response.json()
+      } else if ([400, 401].indexOf(response.status) > -1) {
+        window.alert('您还没登陆jira呦～去登陆')
+        window.chrome.tabs.create({ url: 'https://jira.garenanow.com/secure/Dashboard.jspa' })
+      }
     })
     .then(function (myJson) {
       var result = [['url', 'summary', 'description', 'assignee', 'reporter', 'created']]
@@ -42,9 +47,10 @@ window.chrome.runtime.onMessage.addListener(function (request, sender, sendRespo
           result.push(arr)
         })
       }
-
       window.alert(result)
       generateSheet(result)
+    }).catch(function (err) {
+      console.log(err)
     })
 })
 

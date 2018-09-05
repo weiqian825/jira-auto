@@ -48,22 +48,19 @@ window.chrome.runtime.onMessage.addListener(function (request, sender, sendRespo
     })
 })
 
-function generateSheet (data) {
+async function generateSheet (data) {
   const title = tFormat('YYYY-MM-DD hh:mm:ss')
-  gSheet.getAuthToken()
-    .then(() => {
-      gSheet.createSheet({
-        'properties': {
-          title
-        }
-      })
-        .then(res => {
-          const { spreadsheetId } = res
-          gSheet.writeToSheet({
-            spreadsheetId,
-            range: 'Sheet1!A1:A',
-            values: data
-          })
-        })
-    })
+  await gSheet.getAuthToken()
+  const res = await gSheet.createSheet({
+    'properties': {
+      title
+    }
+  })
+  const { spreadsheetId } = res
+  await gSheet.writeToSheet({
+    spreadsheetId,
+    range: 'Sheet1!A1:A',
+    values: data
+  })
+  window.chrome.tabs.create({ url: 'https://drive.google.com/drive/u/0/my-drive' })
 }
